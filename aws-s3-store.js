@@ -88,6 +88,8 @@ function jsonfile_store(options) {
       var listCallback = function (err, data) {
         if (err) cb(err, fileList)
 
+        console.log(fileList)
+
         for (var i = 0; i < data.Contents.length; i++) {
           fileList.push(data.Contents[i].Key)
         }
