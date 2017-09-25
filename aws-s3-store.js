@@ -25,14 +25,12 @@ function jsonfile_store(options) {
   var s3 = new aws.S3(aws_params);
 
   var s3Fs = {
-    bucketName: '',
     exists: function (folder, cb) {
       s3.headBucket({ Bucket: folder }, function (err, data) {
         cb(!err)
       })
     },
     createBucket: function (name, region, cb) {
-      this.bucketName = name;
       s3.createBucket({
         Bucket: name,
         CreateBucketConfiguration: {
@@ -42,20 +40,20 @@ function jsonfile_store(options) {
     },
     uploadFile: function (key, body, cb) {
       s3.upload({
-        Bucket: this.bucketName,
+        Bucket: options.folder,
         Key: key,
         Body: body
       }, cb)
     },
     stat: function (key, cb) {
       s3.headObject({
-        Bucket: this.bucketName,
+        Bucket: options.folder,
         Key: key
       }, cb)
     },
     readFile: function (key, cb) {
       s3.getObject({
-        Bucket: this.bucketName,
+        Bucket: options.folder,
         Key: key
       }, function (err, data) {
         if (err) cb(err, data)
@@ -65,12 +63,12 @@ function jsonfile_store(options) {
       })
     },
     rename: function (key, new_key, cb) {
-      var bucketName = this.bucketName
+      var bucketName = options.folder
 
       s3.copyObject({
         Bucket: bucketName,
         Key: new_key,
-        CopySource: `${this.bucketName}/${key}`
+        CopySource: `${bucketName}/${key}`
       }, function (err, data) {
         if (err) cb(err, data)
         else {
@@ -83,10 +81,10 @@ function jsonfile_store(options) {
     },
     listFiles: function (key, cb) {
       var fileList = []
-      var bucketName = this.bucketName
+      var bucketName = options.folder
 
       var listCallback = function (err, data) {
-        if (err) cb(err, fileList)
+        if (err) return cb(err, fileList)
 
         for (var i = 0; i < data.Contents.length; i++) {
           fileList.push(data.Contents[i].Key)
@@ -142,10 +140,7 @@ function jsonfile_store(options) {
     var base = canon.base
     var name = canon.name
 
-    var entfolder = (base ? base + '_' : '') + name
-    var folderpath = Path.join(options.folder, entfolder)
-
-    return folderpath
+    return (base ? base + '_' : '') + name
   }
 
   function do_load(args, qent, filepath, cb) {
@@ -182,7 +177,7 @@ function jsonfile_store(options) {
         var filename = filelist[i]
         if (filename) {
           if (filename.match(filename_re)) {
-            var filepath = Path.join(folderpath, filename)
+            var filepath = filename
             do_load(args, qent, filepath, function (err, fent) {
               if (good(args, err, cb)) {
                 // match query
@@ -379,7 +374,7 @@ function jsonfile_store(options) {
       }
 
       s3Fs.uploadFile(
-        Path.join(options.folder, 'seneca.txt'),
+        'seneca.txt',
         'This is a s3-bucket-store folder.',
         function (err) {
           if (err) {
