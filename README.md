@@ -1,14 +1,14 @@
 ![Seneca](http://senecajs.org/files/assets/seneca-logo.png)
 
-> A [Seneca.js][] data storage plugin
+> A [Seneca.js][] data storage plugin for AWS S3
 
 # seneca-jsonfile-store
 [![npm version][npm-badge]][npm-url]
-[![Build Status][travis-badge]][travis-url]
-[![Dependency Status][david-badge]][david-url]
-[![Gitter][gitter-badge]][gitter-url]
 
 ## Description
+
+**_Basically has the exact same features as 'seneca-jsonfile-store' but it connects to amazon S3 buckets!_**
+
 This module is a plugin for [Seneca.js][]. It provides a storage engine that uses JSON files to
 persist data. This module is not appropriate for production usage, it is intended for very low
 workloads, and as a example of a storage plugin code base.
@@ -27,6 +27,21 @@ To install, simply use npm. Remember you will need to install [Seneca.js][] sepa
 ```sh
 npm install seneca
 npm install seneca-jsonfile-store
+```
+
+## Configure AWS connection with S3
+
+Load the plugin with `seneca` using `.use()` and giving the following configuration:
+
+```js
+.use('seneca-aws-s3-store', {
+  folder: 'my-s3-bucket-name',
+  aws: {
+    region: 'aws-region',
+    accessKeyId: 'aws-access-key-id',
+    secretAccessKey: 'aws-secret-access-key'
+  }
+})
 ```
 
 ## Usage
@@ -96,11 +111,5 @@ Licensed under [MIT][].
 [MIT]: ./LICENSE
 [Senecajs org]: https://github.com/senecajs/
 [Seneca.js]: https://www.npmjs.com/package/seneca
-[npm-badge]: https://img.shields.io/npm/v/seneca-jsonfile-store.svg
-[npm-url]: https://npmjs.com/package/seneca-jsonfile-store
-[david-badge]: https://david-dm.org/rjrodger/seneca-jsonfile-store.svg
-[david-url]: https://david-dm.org/rjrodger/seneca-jsonfile-store
-[travis-badge]: https://travis-ci.org/senecajs/seneca-jsonfile-store.svg
-[travis-url]: https://travis-ci.org/senecajs/seneca-jsonfile-store
-[gitter-badge]: https://badges.gitter.im/Join%20Chat.svg
-[gitter-url]: https://gitter.im/senecajs/seneca
+[npm-badge]: https://img.shields.io/npm/v/seneca-aws-s3-store.svg
+[npm-url]: https://www.npmjs.com/package/seneca-aws-s3-store
